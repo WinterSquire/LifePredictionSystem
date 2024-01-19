@@ -2,7 +2,9 @@
 #include <random>
 
 #include <QApplication>
+#include <QMainWindow>
 
+#include <QGroupBox>
 #include <QPushButton>
 #include <QDialog>
 #include <QLabel>
@@ -10,13 +12,11 @@
 
 #include "Python.h"
 
-QWidget *mainWindow = nullptr;
-
-void PythonSaySomething()
+void PythonSaySomething(QWidget *parent)
 {
     PyObject *main_module, *main_dict, *randint;
-    long result = 0;
-    int method = rand() % 2;
+    long result;
+    int offsetX, offsetY;
 
     QDialog *dialogue;
     QLabel *label;
@@ -34,8 +34,7 @@ void PythonSaySomething()
     }
 
     /* Switch Statement */
-
-    switch (method) {
+    switch (rand() % 2) {
         case 0:
             goto METHOD0;
         case 1:
@@ -84,19 +83,32 @@ void PythonSaySomething()
 
     std::cout << "Python says: " << result << std::endl;
 
-    dialogue = new QDialog(mainWindow);
+    dialogue = new QDialog(parent);
     dialogue->setWindowTitle(QString("Python says: %1").arg(result));
     dialogue->resize(200, 100);
-
+    dialogue->setLayout(new QVBoxLayout());
     // prevent memory leak
     dialogue->connect(dialogue, &QDialog::finished, dialogue, &QDialog::deleteLater);
 
     label = new QLabel(dialogue);
     label->setText(QString("Python says: %1").arg(result));
     label->setAlignment(Qt::AlignCenter);
-    dialogue->setLayout(new QVBoxLayout());
     dialogue->layout()->addWidget(label);
+
     dialogue->show();
+
+    offsetX = static_cast<int>(parent->width() / 2 * (result / 100.0f));
+    offsetY = static_cast<int>(parent->height() / 2 * (result / 100.0f));
+
+    if (rand() % 2)
+        offsetX = -offsetX;
+    if (rand() % 2)
+        offsetY = -offsetY;
+
+    dialogue->move(
+            parent->pos().x() + parent->width() / 2 + offsetX,
+            parent->pos().y() + parent->width() / 2 + offsetY
+            );
 
     /* Python Finalization */
     PYTHON_FINALIZATION:
@@ -107,14 +119,38 @@ void PythonSaySomething()
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
-    QPushButton button("Hello World");
 
-    mainWindow = &button;
+    // use stack alloc to prevent memory leak
+    QMainWindow window(nullptr, Qt::WindowFlags {Qt::MSWindowsFixedSizeDialogHint});
+    window.setWindowTitle(QString("Python Embedding"));
+    window.resize(640,480);
 
-    button.resize(200, 100);
-    button.show();
+    {
+        // set group box
+        auto box = new QGroupBox(&window);
+        auto layout = new QVBoxLayout(box);
+        box->setLayout(layout);
 
-    button.connect(&button, &QPushButton::clicked, &PythonSaySomething);
+        // set button
+        auto button = new QPushButton("Let Python say something", &window);
+        button->resize(200, 100);
+        button->connect(button, &QPushButton::clicked, std::bind(PythonSaySomething, &window));
 
+        // set label
+        auto label = new QLabel("Python says something", &window);
+        label->setAlignment(Qt::AlignCenter);
+
+        // set layout
+        layout->addWidget(label);
+        layout->addWidget(button);
+
+        // set central widget
+        window.setCentralWidget(box);
+    }
+
+    // show window
+    window.show();
+
+    // enter main loop
     return app.exec();
 }

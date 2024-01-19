@@ -1,4 +1,12 @@
+# Clion
 cmake-build-debug/
 cmake-build-release/
 .idea/
+
+# Visual Studio Code
 .vscode/
+
+# Visual Studio
+.vs/
+out/
+CMakeSettings.json

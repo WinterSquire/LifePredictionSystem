@@ -6,6 +6,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+set(CMAKE_BUILD_TYPE Release)
+
 # python lib debug suffix
 set(DEBUG_SUFFIX)
 if (MSVC AND CMAKE_BUILD_TYPE MATCHES "Debug")
