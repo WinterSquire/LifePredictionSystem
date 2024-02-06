@@ -22,5 +22,5 @@ after_build:
   - 7z a %APPVEYOR_PROJECT_NAME%.zip %APPVEYOR_BUILD_FOLDER%\build\bin\Release\.
 
 artifacts:
-  - path: %APPVEYOR_BUILD_FOLDER%\build\%APPVEYOR_PROJECT_NAME%.zip
-    name: %APPVEYOR_PROJECT_NAME%
+  - path: $(APPVEYOR_BUILD_FOLDER)\build\$(APPVEYOR_PROJECT_NAME).zip
+    name: $(APPVEYOR_PROJECT_NAME)
