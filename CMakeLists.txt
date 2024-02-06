@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.27)
-project(LifePredictionSystem)
+cmake_minimum_required(VERSION 3.26)
+project(LifePredictionSystem LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
@@ -8,43 +8,45 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_BUILD_TYPE Release)
 
-# python lib debug suffix
+# Output Path
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# Qt libs
+find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
+
+# Python Path
+include_directories(${PYTHON_DIR}/include)
+link_directories(${PYTHON_DIR}/libs)
+
+# Python lib debug suffix
 set(DEBUG_SUFFIX)
 if (MSVC AND CMAKE_BUILD_TYPE MATCHES "Debug")
     set(DEBUG_SUFFIX "_d")
 endif ()
 
-# Output Path
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# build executable
+include(./src/src.cmake)
 
-# Qt Path
-set(CMAKE_PREFIX_PATH "D:/Program/Tools/Qt/6.5.0/msvc2019_64")
-
-# Python Path
-set(PYTHON_PATH C:/Users/alex/AppData/Local/Programs/Python/Python39)
-
-include_directories(${PYTHON_PATH}/include)
-link_directories(${PYTHON_PATH}/libs)
-
-find_package(Qt6 COMPONENTS
-        Core
-        Gui
-        Widgets
-        REQUIRED)
-
-set (SRC_FILES
-	./src/main.cpp
-)
-
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+add_executable(LifePredictionSystem ${SRC_FILES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets
+        Qt::Core Qt::Gui Qt::Widgets
         python39${DEBUG_SUFFIX}
 )
 
+# copy script files
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/script"
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/script"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/script"
+)
+
+# copy qt library
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(DEBUG_SUFFIX)
     if (MSVC AND CMAKE_BUILD_TYPE MATCHES "Debug")

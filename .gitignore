@@ -10,3 +10,6 @@ cmake-build-release/
 .vs/
 out/
 CMakeSettings.json
+
+# CMake
+build/
