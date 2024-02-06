@@ -31,19 +31,37 @@ add_executable(LifePredictionSystem ${SRC_FILES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         Qt::Core Qt::Gui Qt::Widgets
-        python39${DEBUG_SUFFIX}
+        python${PYTHON_VER}${DEBUG_SUFFIX}
 )
+
+if (${CMAKE_GENERATOR} MATCHES "Visual Studio*")
+        set(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}")
+else ()
+        set(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+endif ()
 
 # copy script files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/script"
+        "${RUNTIME_OUTPUT_DIRECTORY}/script"
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/script"
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/script"
+        "${RUNTIME_OUTPUT_DIRECTORY}/script"
+)
+
+# copy python files
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${RUNTIME_OUTPUT_DIRECTORY}/python"
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PYTHON_DIR}"
+        "${RUNTIME_OUTPUT_DIRECTORY}/python"
 )
 
 # copy qt library

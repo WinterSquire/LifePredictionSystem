@@ -12,7 +12,15 @@ before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
   - mkdir build
   - cd build
-  - cmake .. -G "Visual Studio 17 2022" -D CMAKE_PREFIX_PATH="C:\Qt\6.5.3\msvc2019_64" -D PYTHON_DIR="C:\Python39-x64"
+  - cmake .. -G "Visual Studio 17 2022" -D CMAKE_PREFIX_PATH=%QT6_PATH% -D PYTHON_DIR=%PYTHON_PATH% -D PYTHON_VER=%PYTHON_VERSION%
 
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\build\$(APPVEYOR_PROJECT_NAME).sln
+
+after_build:
+  - cd %APPVEYOR_BUILD_FOLDER%\build
+  - 7z a %APPVEYOR_PROJECT_NAME%.zip %APPVEYOR_BUILD_FOLDER%\build\bin\Release\.
+
+artifacts:
+  - path: %APPVEYOR_BUILD_FOLDER%\build\%APPVEYOR_PROJECT_NAME%.zip
+    name: %APPVEYOR_PROJECT_NAME%
