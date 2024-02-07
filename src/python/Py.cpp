@@ -1,20 +1,46 @@
 #include "Py.h"
 
+#include <Windows.h>
 #include <QString>
-
+#include <filesystem>
 
 Status Py::Initialize() {
-    Py_Initialize();
+    PyStatus status;
+    PyConfig config;
+    wchar_t buffer[MAX_PATH];
+    const wchar_t* paths[] = {L"./python",L"./python/DLLs",L"./python/Lib",L"./python/Lib/site-packages"};
 
-    if (Py_IsInitialized() == false)
-    {
-        LOG("Python Failed To Initialize");
-        return Status::FAILURE;
-    }
+    // 获取路径
+    GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+
+    std::filesystem::path executablePath(buffer);
+    std::filesystem::path pythonFolder = executablePath.parent_path() / L"python";
+
+    // Python Configuration
+    PyConfig_InitIsolatedConfig(&config);
+
+    status = PyConfig_SetString(&config, &config.home, pythonFolder.c_str());
+    if (PyStatus_Exception(status)) goto FAIL;
+    status = PyConfig_SetString(&config, &config.pythonpath_env, pythonFolder.c_str());
+    if (PyStatus_Exception(status)) goto FAIL;
+    status = PyConfig_SetString(&config, &config.program_name, L"LifePredictionSystem");
+    if (PyStatus_Exception(status)) goto FAIL;
+    status = PyConfig_SetWideStringList(&config, &config.module_search_paths, 4, const_cast<wchar_t **>(paths));
+    if (PyStatus_Exception(status)) goto FAIL;
+    status = PyConfig_SetString(&config, &config.executable, (pythonFolder  / L"python.exe").c_str());
+    if (PyStatus_Exception(status)) goto FAIL;
+
+    status = Py_InitializeFromConfig(&config);
+
+    if (PyStatus_Exception(status)) goto FAIL;
 
     LOG("Python Initialized");
     LOG("Python Version: %s", Py_GetVersion());
     return Status::SUCCESS;
+
+    FAIL:
+    LOG("Python Failed To Initialize");
+    return Status::FAILURE;
 }
 
 Status Py::Finalize() {

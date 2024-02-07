@@ -53,16 +53,25 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 )
 
 # copy python files
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-        "${RUNTIME_OUTPUT_DIRECTORY}/python"
-)
+if (NOT EXISTS "${RUNTIME_OUTPUT_DIRECTORY}/python${PYTHON_VER}.dll")
+    if (NOT EXISTS "${RUNTIME_OUTPUT_DIRECTORY}/python/python${PYTHON_VER}.dll")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${RUNTIME_OUTPUT_DIRECTORY}/python"
+        )
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${PYTHON_DIR}"
-        "${RUNTIME_OUTPUT_DIRECTORY}/python"
-)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${PYTHON_DIR}"
+                "${RUNTIME_OUTPUT_DIRECTORY}/python"
+        )
+    endif ()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${RUNTIME_OUTPUT_DIRECTORY}/python/python${PYTHON_VER}.dll"
+            "${RUNTIME_OUTPUT_DIRECTORY}"
+    )
+endif ()
 
 # copy qt library
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
