@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/uro8lrsvb9q57326?svg=true)](https://ci.appveyor.com/project/WinterSquire/lifepredictionsystem)
 # 一. 项目背景
 随着工业5.0的到来，人工智能、云计算、大数据分析等智能技术继续作为有力工具被用于大幅提高生产效率、生产力，推动了各行各业的数字化转型。先进的数据管理和智能分析系统正在利用人工智能和机器学习技术，最大限度地减少生产低效现象，提高企业的效率与竞争力。
 
