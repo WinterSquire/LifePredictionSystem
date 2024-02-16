@@ -52,6 +52,13 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         "${RUNTIME_OUTPUT_DIRECTORY}/script"
 )
 
+# copy ps script file
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/install_python.ps1"
+        "${RUNTIME_OUTPUT_DIRECTORY}/"
+)
+
 # copy python files
 #if (NOT EXISTS "${RUNTIME_OUTPUT_DIRECTORY}/python${PYTHON_VER}.dll")
 #    if (NOT EXISTS "${RUNTIME_OUTPUT_DIRECTORY}/python/python${PYTHON_VER}.dll")
