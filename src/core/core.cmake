@@ -9,4 +9,7 @@ set (SRC_CORE_FILES
 
         ${CMAKE_SOURCE_DIR}/src/core/Application.cpp
         ${CMAKE_SOURCE_DIR}/src/core/Application.h
+
+        ${CMAKE_SOURCE_DIR}/src/core/FileSystem.h
+        ${CMAKE_SOURCE_DIR}/src/core/FileSystem.cpp
 )
