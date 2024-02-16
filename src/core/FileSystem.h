@@ -3,7 +3,9 @@
 
 
 namespace FileSystem {
+    void Init();
 
+    const wchar_t *GetProgramName();
 };
 
 

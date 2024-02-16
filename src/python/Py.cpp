@@ -1,35 +1,51 @@
 #include "Py.h"
 
-#include <Windows.h>
-#include <QString>
 #include <filesystem>
+#include "../core/FileSystem.h"
 
 Status Py::Initialize() {
     PyStatus status;
     PyConfig config;
-    wchar_t buffer[MAX_PATH];
-    const wchar_t* paths[] = {L"./python",L"./python/DLLs",L"./python/Lib",L"./python/Lib/site-packages"};
-
-    // 获取路径
-    GetModuleFileNameW(nullptr, buffer, MAX_PATH);
-
-    std::filesystem::path executablePath(buffer);
-    std::filesystem::path pythonFolder = executablePath.parent_path() / L"python";
 
     // Python Configuration
     PyConfig_InitIsolatedConfig(&config);
 
-    status = PyConfig_SetString(&config, &config.home, pythonFolder.c_str());
-    if (PyStatus_Exception(status)) goto FAIL;
-    status = PyConfig_SetString(&config, &config.pythonpath_env, pythonFolder.c_str());
-    if (PyStatus_Exception(status)) goto FAIL;
-    status = PyConfig_SetString(&config, &config.program_name, L"LifePredictionSystem");
-    if (PyStatus_Exception(status)) goto FAIL;
-    status = PyConfig_SetWideStringList(&config, &config.module_search_paths, 4, const_cast<wchar_t **>(paths));
-    if (PyStatus_Exception(status)) goto FAIL;
-    status = PyConfig_SetString(&config, &config.executable, (pythonFolder  / L"python.exe").c_str());
+    // Enable import
+    config.site_import = true;
+
+    /* Python home directory.
+     * Initialized from PYTHONHOME environment variable value by default.
+     * */
+    status = PyConfig_SetString(&config, &config.home,
+                                std::filesystem::absolute("./python").c_str());
     if (PyStatus_Exception(status)) goto FAIL;
 
+    /* Module search paths as a string separated by DELIM (os.path.pathsep).
+     * Initialized from PYTHONPATH environment variable value by default.
+     * */
+    status = PyConfig_SetString(&config, &config.pythonpath_env,
+                                std::filesystem::absolute("./python/python39.zip").c_str());
+    if (PyStatus_Exception(status)) goto FAIL;
+
+    /* sys.platlibdir: platform library directory name, set at configure time by --with-platlibdir,
+     * overrideable by the PYTHONPLATLIBDIR environment variable.
+     * New in version 3.9.
+     * */
+    status = PyConfig_SetString(&config, &config.platlibdir,
+                                L"python39.zip");
+    if (PyStatus_Exception(status)) goto FAIL;
+
+    /* Program name. Used to initialize executable, and in early error messages. */
+    status = PyConfig_SetString(&config, &config.program_name,
+                                FileSystem::GetProgramName());
+    if (PyStatus_Exception(status)) goto FAIL;
+
+    /* sys.executable */
+    status = PyConfig_SetString(&config, &config.executable,
+                                std::filesystem::absolute("./python/python.exe").c_str());
+    if (PyStatus_Exception(status)) goto FAIL;
+
+    // Initialize
     status = Py_InitializeFromConfig(&config);
 
     if (PyStatus_Exception(status)) goto FAIL;

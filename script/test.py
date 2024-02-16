@@ -1,2 +1,6 @@
+import numpy as np
 
-print("Hello World")
+matrix = np.array([[0,1],[2,3]])
+result = matrix.dot(matrix)
+
+print(result)

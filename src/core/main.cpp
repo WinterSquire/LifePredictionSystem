@@ -3,20 +3,32 @@
 #include "Application.h"
 
 #include "../python/Py.h"
+#include "../core/FileSystem.h"
 
 Status Prologue()
 {
     LOG("On Prologue");
 
+    FileSystem::Init();
+
     if (Py::Initialize() == Status::FAILURE) return Status::FAILURE;
 
     Application::Initialize();
+
 
     return Status::SUCCESS;
 }
 
 int Main()
 {
+    auto file = fopen("./script/test.py", "rb");
+
+    if (file) {
+        PyRun_SimpleFile(file, "test.py");
+
+        delete file;
+    }
+
     LOG("On Main");
 
     return Application::Execute();
