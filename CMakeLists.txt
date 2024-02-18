@@ -9,10 +9,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_BUILD_TYPE Release)
 
 # Output Path
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Qt libs
-find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
+set(Qt6_LIB Core Gui Widgets Sql)
+find_package(Qt6 COMPONENTS ${Qt6_LIB} REQUIRED)
 
 # Python Path
 include_directories(${PYTHON_DIR}/include)
@@ -25,12 +26,14 @@ if (MSVC AND CMAKE_BUILD_TYPE MATCHES "Debug")
 endif ()
 
 # build executable
-include(./src/src.cmake)
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 
-add_executable(LifePredictionSystem ${SRC_FILES})
+file(GLOB_RECURSE SRC_FILES ${SOURCE_DIR}/*.cpp ${SOURCE_DIR}/*.h ${SOURCE_DIR}/*.ui)
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
-        Qt::Core Qt::Gui Qt::Widgets
+add_executable(LifePredictionSystem ${SRC_FILES} src/interface/resource.qrc)
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+        Qt::Core Qt::Gui Qt::Widgets Qt::Sql
         python${PYTHON_VER}${DEBUG_SUFFIX}
 )
 
@@ -102,7 +105,7 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
                 "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll"
                 "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
     endif ()
-    foreach (QT_LIB Core Gui Widgets)
+    foreach (QT_LIB ${Qt6_LIB})
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
                 "${QT_INSTALL_PATH}/bin/Qt6${QT_LIB}${DEBUG_SUFFIX}.dll"

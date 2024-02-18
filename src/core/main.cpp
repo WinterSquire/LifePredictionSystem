@@ -39,6 +39,8 @@ void Epilogue()
     LOG("On Epilogue");
 
     Py::Finalize();
+
+    Application::Shutdown();
 }
 
 int main(int argc, char* argv[]){

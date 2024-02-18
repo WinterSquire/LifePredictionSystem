@@ -3,22 +3,26 @@
 #include "./base.h"
 #include "./main.h"
 
+#include "../interface/mainwindow.h"
+
 #include <QApplication>
 
 QApplication *qApplication;
-
-#include "../interface/window/test/window1/Window1.h"
+MainWindow *mainWindow;
 
 void Application::Initialize() {
     qApplication = new QApplication(args.argc, args.argv);
-
-#ifdef TEST1
-    Window1* window1 = new Window1();
-    window1->show();
-#endif
-
+    mainWindow = new MainWindow();
 }
 
 int Application::Execute() {
+    mainWindow->show();
+
     return qApplication->exec();
 }
+
+void Application::Shutdown() {
+    delete mainWindow;
+    delete qApplication;
+}
+
