@@ -3,26 +3,26 @@
 #include "./base.h"
 #include "./main.h"
 
-#include "../interface/mainwindow.h"
+#include "../interface/MainWidget.h"
 
 #include <QApplication>
 
 QApplication *qApplication;
-MainWindow *mainWindow;
+MainWidget *mainWidget;
 
 void Application::Initialize() {
     qApplication = new QApplication(args.argc, args.argv);
-    mainWindow = new MainWindow();
+    mainWidget = new MainWidget();
 }
 
 int Application::Execute() {
-    mainWindow->show();
+    mainWidget->show();
 
     return qApplication->exec();
 }
 
 void Application::Shutdown() {
-    delete mainWindow;
+    delete mainWidget;
     delete qApplication;
 }
 

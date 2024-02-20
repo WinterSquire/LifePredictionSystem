@@ -12,7 +12,12 @@ set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Qt libs
-set(Qt6_LIB Core Gui Widgets Sql)
+set(Qt6_LIB Core Gui Widgets Charts OpenGL OpenGLWidgets)
+
+foreach (item ${Qt6_LIB})
+    set(Qt6_Link ${Qt6_Link} Qt::${item})
+endforeach (item)
+
 find_package(Qt6 COMPONENTS ${Qt6_LIB} REQUIRED)
 
 # Python Path
@@ -30,12 +35,9 @@ set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 
 file(GLOB_RECURSE SRC_FILES ${SOURCE_DIR}/*.cpp ${SOURCE_DIR}/*.h ${SOURCE_DIR}/*.ui)
 
-add_executable(LifePredictionSystem ${SRC_FILES} src/interface/resource.qrc)
+add_executable(LifePredictionSystem ${SRC_FILES})
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-        Qt::Core Qt::Gui Qt::Widgets Qt::Sql
-        python${PYTHON_VER}${DEBUG_SUFFIX}
-)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${Qt6_Link} python${PYTHON_VER}${DEBUG_SUFFIX})
 
 if (${CMAKE_GENERATOR} MATCHES "Visual Studio*")
         set(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}")
