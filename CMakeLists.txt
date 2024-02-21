@@ -60,7 +60,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 # copy ps script file
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_SOURCE_DIR}/install_python.ps1"
+        "${CMAKE_SOURCE_DIR}/install_package.bat"
         "${RUNTIME_OUTPUT_DIRECTORY}/"
 )
 
