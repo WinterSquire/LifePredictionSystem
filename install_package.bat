@@ -1,5 +1,5 @@
 @echo off
-set mirror=https://your-mirror-url.com
+set mirror=https://pypi.tuna.tsinghua.edu.cn/simple
 
 python\python -m pip install numpy -i %mirror%
 python\python -m pip install pandas -i %mirror%
