@@ -21,10 +21,10 @@ Status Prologue()
 
 int Main()
 {
-    auto file = fopen("./script/test.py", "rb");
+    auto file = fopen("./script/CNN/CNN.py", "rb");
 
     if (file) {
-        PyRun_SimpleFile(file, "test.py");
+        PyRun_SimpleFile(file, "./script/CNN/CNN.py");
 
         delete file;
     }
