@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <array>
+#include <string>
 
 #include <algorithm>
 
@@ -15,6 +16,7 @@ enum class Status : int{
     FAILURE
 };
 
-#define TEST1
+using std::string;
+using std::vector;
 
 #endif //LIFEPREDICTIONSYSTEM_BASE_H

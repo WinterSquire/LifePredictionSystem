@@ -1,6 +1,7 @@
 #ifndef LIFEPREDICTIONSYSTEM_FILESYSTEM_H
 #define LIFEPREDICTIONSYSTEM_FILESYSTEM_H
 
+#include <filesystem>
 
 namespace FileSystem {
     void Init();

@@ -35,6 +35,9 @@ MainWidget::MainWidget(QWidget* parent)
     }
 }
 
+#include "../python/PyWorker.h"
+#include "../model/cnn/CNNParser.h"
+
 void MainWidget::openModel(MainWidget::eModel model) {
     auto view = new GeneralModelView();
     view->setFixedSize(640, 480);
@@ -51,6 +54,14 @@ void MainWidget::openModel(MainWidget::eModel model) {
         case eModel::MODEL_CNN:
             view->setWindowTitle("CNN预测");
             view->setTotalScoreVisibility(true);
+            connect(view->btnExecute(), &QPushButton::pressed, [=]{
+                auto cnn = PyTask{"CNN", "cnn", {"./script/data/test.txt"}};
+
+                PyWorker::RunPyScriptAsync(cnn, [=](string data) {
+                    auto result = Model::CNN::Parse(data.c_str());
+                    view->setData(result);
+                });
+            });
             break;
         case eModel::MODEL_PC:
             view->setWindowTitle("???预测");

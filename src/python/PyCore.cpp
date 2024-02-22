@@ -1,11 +1,15 @@
-#include "Py.h"
+#include "PyCore.h"
 
-#include <filesystem>
+#include "Python.h"
 #include "../core/FileSystem.h"
 
-Status Py::Initialize() {
+bool is_core_running = false;
+
+Status PyCore::Initialize() {
     PyStatus status;
     PyConfig config;
+
+    if (Py_IsInitialized() == true) return Status::FAILURE;
 
     // Python Configuration
     PyConfig_InitIsolatedConfig(&config);
@@ -24,7 +28,7 @@ Status Py::Initialize() {
      * Initialized from PYTHONPATH environment variable value by default.
      * */
     status = PyConfig_SetString(&config, &config.pythonpath_env,
-                                std::filesystem::absolute("./python/python39.zip").c_str());
+                                L"./python/python39.zip;./script");
     if (PyStatus_Exception(status)) goto FAIL;
 
     /* sys.platlibdir: platform library directory name, set at configure time by --with-platlibdir,
@@ -35,7 +39,9 @@ Status Py::Initialize() {
                                 L"python39.zip");
     if (PyStatus_Exception(status)) goto FAIL;
 
-    /* Program name. Used to initialize executable, and in early error messages. */
+    /* Program name. Used to initialize executable, and in early error messages.
+     * CWD
+     * */
     status = PyConfig_SetString(&config, &config.program_name,
                                 FileSystem::GetProgramName());
     if (PyStatus_Exception(status)) goto FAIL;
@@ -52,37 +58,19 @@ Status Py::Initialize() {
 
     LOG("Python Initialized");
     LOG("Python Version: %s", Py_GetVersion());
+    is_core_running = true;
     return Status::SUCCESS;
 
     FAIL:
+    if (Py_IsInitialized() == true) Py_FinalizeEx();
     LOG("Python Failed To Initialize");
     return Status::FAILURE;
 }
 
-Status Py::Finalize() {
+Status PyCore::Finalize() {
     if (Py_IsInitialized() == true) Py_FinalizeEx();
     LOG("Python Finalized");
+    is_core_running = false;
     return Status::SUCCESS;
 }
 
-Status Py::RunString(const char *code) {
-    int status;
-
-//    auto interpreter = Py_NewInterpreter();
-
-    LOG("========= Python Run String Begin =========");
-
-    status = PyRun_SimpleString(code);
-
-    LOG("========= Python Run String End =========");
-
-//    Py_EndInterpreter(interpreter);
-
-    if (status != 0)
-    {
-        LOG("Python Failed To Run Code: %s", code);
-        return Status::FAILURE;
-    }
-
-    return Status::SUCCESS;
-}
