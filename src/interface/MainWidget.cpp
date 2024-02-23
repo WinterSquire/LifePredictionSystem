@@ -57,7 +57,7 @@ void MainWidget::openModel(MainWidget::eModel model) {
             view->setWindowTitle("CNN预测");
             view->setTotalScoreVisibility(true);
             connect(view->btnExecute(), &QPushButton::pressed, [=]{
-                auto cnn = PyTask{"CNN", "cnn", {"./script/data/test.txt"}};
+                auto cnn = PyTask{"ModelSet", "cnn", {"./script/data/test.txt"}};
 
                 PyWorker::RunPyScriptAsync(cnn, [=](string data) {
                     auto result = Model::CNN::Parse(data.c_str());
