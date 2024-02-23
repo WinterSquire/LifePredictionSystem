@@ -16,6 +16,7 @@ MainWidget::MainWidget(QWidget* parent)
         {"PlaceHolder", eModel::MODEL_PC},
     }), m_modelMap()
 {
+    setFixedSize(256, 512);
     // 设置窗口标题
     setWindowTitle("机器寿命预测系统");
 
@@ -26,6 +27,7 @@ MainWidget::MainWidget(QWidget* parent)
         m_modelMap.insert(item.first, item.second);
 
         auto button = new QPushButton(item.first, this);
+        button->setStyleSheet("padding: 10px");
 
         layout->addWidget(button);
 

@@ -98,7 +98,8 @@ void GeneralModelView::setData(const Model::Result &result) {
     }
 
     m_chartWidget->setAxisXRange(0, epoch);
-    m_chartWidget->setAxisYRange(range_miny, range_maxy);
+    m_chartWidget->setAxisYRange(range_miny >= 1000 ? range_miny - 1000 : range_miny,
+                                 range_maxy + 1000);
     m_chartWidget->update();
 
     m_textEpoch->text()->setText(QString::number(epoch));

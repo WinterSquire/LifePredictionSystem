@@ -13,12 +13,6 @@ DefaultChartWidget::DefaultChartWidget(QWidget* parent)
         , m_axisY(new QValueAxis())
         , m_chartView(new QChartView(this)) {
 
-    m_axisX->setTitleText("Epoch");
-    m_axisY->setTitleText("MSE");
-    m_axisX->setRange(0, 50);
-    m_axisY->setRange(4000, 6000);
-
-
     // 设置图表
     m_chart->setTitle("散点图");
     m_chart->addAxis(m_axisX, Qt::AlignBottom);
@@ -42,6 +36,8 @@ DefaultChartWidget::DefaultChartWidget(QWidget* parent)
     m_fSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
 
     m_chart->createDefaultAxes();
+    m_chart->axisX()->setTitleText("Epoch");
+    m_chart->axisY()->setTitleText("MSE");
     m_chart->setAnimationOptions(QChart::AnimationOptions(QChart::AllAnimations));
 
     // 配置viewer
@@ -58,9 +54,11 @@ void DefaultChartWidget::update() {
 }
 
 void DefaultChartWidget::setAxisXRange(double min, double max) {
-//    if (m_axisX) m_axisX->rangeChanged(min, max);
+    m_chart->axisX()->setRange(min, max);
+//    if (m_axisX) m_axisX->rangeChanged(min, max); // crash
 }
 
 void DefaultChartWidget::setAxisYRange(double min, double max) {
-//    if (m_axisY) m_axisY->rangeChanged(min, max);
+    m_chart->axisY()->setRange(min, max);
+//    if (m_axisY) m_axisY->rangeChanged(min, max); //crash
 }
