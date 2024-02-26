@@ -1,6 +1,7 @@
 #include "KNN.h"
 
 #include <QLayout>
+#include <QMessageBox>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QFileDialog>
@@ -13,6 +14,7 @@
 
 KNN::KNN(QWidget* parent)
         : QDialog(parent)
+        , m_knnTypeComboBox(new QComboBox(this))
         , m_chartRMSE(new DefaultChartWidget(this))
         , m_chartScore(new DefaultChartWidget(this))
 {
@@ -69,6 +71,23 @@ KNN::KNN(QWidget* parent)
     auto groupBox = new QGroupBox();
     groupBox->setLayout(new QVBoxLayout());
 
+    {
+        QMap<eKNNType, QString> enumMap = {
+                {Type1, "Type1"},
+                {Type2, "Type2"},
+                {Type3, "Type3"},
+                {Type4, "Type4"}
+        };
+
+        for (eKNNType value : enumMap.keys()) {
+            m_knnTypeComboBox->addItem(enumMap[value], QVariant(value));
+        }
+
+        m_knnTypeComboBox->setCurrentIndex(0);
+
+        groupBox->layout()->addWidget(m_knnTypeComboBox);
+    }
+
     // 设置按钮
     {
         auto buttonGroup = new QGroupBox();
@@ -79,14 +98,20 @@ KNN::KNN(QWidget* parent)
         connect(btnSelectFile, &QPushButton::pressed, [=]{
             auto dialogue = new QFileDialog(this);
             dialogue->setNameFilter("Data Files(*.csv *.txt)");
-            dialogue->exec();
+            if (dialogue->exec())
+                selectedFile = dialogue->selectedFiles()[0];
         });
 
         m_btnExecute = new QPushButton("执行");
-        connect(m_btnExecute, &QPushButton::pressed, [=]{
-            auto cnn = PyTask{"ModelSet", "knn", {"./script/data/KNN/0-40test.txt"}};
+        connect(m_btnExecute, &QPushButton::pressed, [&]{
+            if (!QFileInfo(selectedFile).exists()) {
+                QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
+                return;
+            }
 
-            PyWorker::RunPyScriptAsync(cnn, [=](string data) {
+            auto knn = PyTask{"ModelSet", "knn", {selectedFile.toStdString(), std::to_string(m_knnTypeComboBox->currentIndex())}};
+
+            PyWorker::RunPyScriptAsync(knn, [=](string data) {
                 auto result = Model::KNN::Parse(data.c_str());
                 setData(result);
             });

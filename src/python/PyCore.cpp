@@ -3,8 +3,6 @@
 #include "Python.h"
 #include "../core/FileSystem.h"
 
-bool is_core_running = false;
-
 Status PyCore::Initialize() {
     PyStatus status;
     PyConfig config;
@@ -58,19 +56,17 @@ Status PyCore::Initialize() {
 
     LOG("Python Initialized");
     LOG("Python Version: %s", Py_GetVersion());
-    is_core_running = true;
     return Status::SUCCESS;
 
     FAIL:
-    if (Py_IsInitialized() == true) Py_FinalizeEx();
+    if (Py_IsInitialized() == true) Py_Finalize();
     LOG("Python Failed To Initialize");
     return Status::FAILURE;
 }
 
 Status PyCore::Finalize() {
-    if (Py_IsInitialized() == true) Py_FinalizeEx();
+    if (Py_IsInitialized() == true) Py_Finalize();
     LOG("Python Finalized");
-    is_core_running = false;
     return Status::SUCCESS;
 }
 

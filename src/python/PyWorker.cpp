@@ -46,7 +46,7 @@ Status PyWorker::RunPyScriptSync(const PyTask &task, std::function<void(string)>
             LOG("PyWorker: Can't Find Function");
     }
     else
-        LOG("PyWorker: Can't Find Module(%s)");
+        LOG("PyWorker: Can't Find Module(%s)", task.module.c_str());
 
 //    PyGILState_Release(gstate);
     PyCore::Finalize();

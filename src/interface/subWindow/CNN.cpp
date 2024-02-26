@@ -1,10 +1,12 @@
 #include "CNN.h"
 
+#include <QFileInfo>
 #include <QLayout>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QFileDialog>
 #include <QPlainTextEdit>
+#include <QMessageBox>
 
 #include "../widget/TextField.h"
 #include "../../python/PyTask.h"
@@ -81,12 +83,20 @@ CNN::CNN(QWidget* parent)
         connect(btnSelectFile, &QPushButton::pressed, [=]{
             auto dialogue = new QFileDialog(this);
             dialogue->setNameFilter("Data Files(*.csv *.txt)");
-            dialogue->exec();
+            dialogue->setFileMode(QFileDialog::ExistingFile);
+            if (dialogue->exec()) {
+                selectedFile = dialogue->selectedFiles()[0];
+            }
         });
 
         m_btnExecute = new QPushButton("执行");
-        connect(m_btnExecute, &QPushButton::pressed, [=]{
-            auto cnn = PyTask{"ModelSet", "cnn", {"./script/data/CNN/test.txt"}};
+        connect(m_btnExecute, &QPushButton::pressed, [&]{
+            if (!QFileInfo(selectedFile).exists()) {
+                QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
+                return;
+            }
+
+            auto cnn = PyTask{"ModelSet", "cnn", {selectedFile.toStdString()}};
 
             PyWorker::RunPyScriptAsync(cnn, [=](string data) {
                 auto result = Model::CNN::Parse(data.c_str());

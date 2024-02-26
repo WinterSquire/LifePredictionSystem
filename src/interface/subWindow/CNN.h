@@ -20,6 +20,7 @@ public:
 protected:
 
 private:
+    QString selectedFile;
     QPushButton *m_btnExecute;
     DefaultChartWidget *m_chartMSE, *m_chartLoss;
     QScatterSeries *m_aMSESeries, *m_fMSESeries;
