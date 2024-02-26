@@ -1,12 +1,16 @@
 from ModelSet.data import *
-from .model_process import process
+from .model_process import KNN
 
-def knn(test_data_path: str) -> str:
-    column_to_delete = [0,1,1,4]
+def knn(test_data_path: str, index: int = 0) -> str:
+    columns_to_delete = [
+        [1, 2, 6],
+        [1, 2, 6, 8, 12, 13, 15],
+        [1, 2, 3, 6, 7, 8, 10, 11, 12, 15, 16],
+        [6],
+    ]
 
-    train_data = drop_column(reindex_column(drop_column(load_data(get_knn_train_data_path(), sep=','), [19])), column_to_delete)
-    test_data = drop_column(reindex_column(load_data(test_data_path, ',', None)), column_to_delete)
-
-    result = process(train_data, test_data)
+    result = KNN(test_data_path, get_knn_train_data_path(index), columns_to_delete[index])
 
     return str(result).replace('\'', '\"')
+
+

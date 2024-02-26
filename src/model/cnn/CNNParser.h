@@ -1,11 +1,11 @@
 #ifndef LIFEPREDICTIONSYSTEM_CNNPARSER_H
 #define LIFEPREDICTIONSYSTEM_CNNPARSER_H
 
-#include "../ModelResult.h"
+#include "CNNResult.h"
 
 namespace Model {
      namespace CNN {
-         Model::Result Parse(const char* str);
+         Result Parse(const char* str);
      }
 };
 

@@ -4,7 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-vector<double> getVector(const QJsonObject& json, const char* key) {
+static vector<double> getVector(const QJsonObject& json, const char* key) {
     vector<double> result;
     auto array = json[key].toArray();
 
@@ -15,7 +15,7 @@ vector<double> getVector(const QJsonObject& json, const char* key) {
     return result;
 }
 
-Model::Result Model::CNN::Parse(const char* str) {
+Model::CNN::Result Model::CNN::Parse(const char* str) {
     QString jsonStr(str);
 
     auto jsonDocument = QJsonDocument::fromJson(jsonStr.toUtf8());
@@ -23,13 +23,13 @@ Model::Result Model::CNN::Parse(const char* str) {
     // 检查是否解析成功
     if (jsonDocument.isNull()) {
         LOG("Failed to parse JSON data.");
-        return Model::Result{};
+        return {};
     }
 
     // 获取 JSON 对象
     auto jsonObject = jsonDocument.object();
 
-    return Model::Result{
+    return {
             {
                     getVector(jsonObject, "mse"),
                     getVector(jsonObject, "loss"),

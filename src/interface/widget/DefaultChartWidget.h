@@ -13,19 +13,19 @@ class DefaultChartWidget : public QWidget{
 public:
     DefaultChartWidget(QWidget* parent = nullptr);
 
-    QScatterSeries* forecastSeries() {return m_fSeries;}
-    QScatterSeries* actualSeries() {return m_aSeries;}
+    QScatterSeries* addSeries();
     void update();
+    void setChartTitle(const char *title);
     void setAxisXRange(double min, double max);
+    void setAxisXName(const char *name);
     void setAxisYRange(double min, double max);
+    void setAxisYName(const char *name);
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
     QChart* m_chart;
     QChartView* m_chartView;
-    QScatterSeries* m_fSeries;
-    QScatterSeries* m_aSeries;
     QValueAxis* m_axisX;
     QValueAxis* m_axisY;
 };
