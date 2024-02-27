@@ -8,8 +8,7 @@
 #include <functional>
 
 namespace PyWorker {
-    Status RunPyScriptSync(const PyTask& task, std::function<void(string)> invokeAfterComplete);
-    Status RunPyScriptAsync(const PyTask& task, std::function<void(string)> invokeAfterComplete);
+    Status RunPyScriptSync(const PyTask &task, string& content);
 };
 
 

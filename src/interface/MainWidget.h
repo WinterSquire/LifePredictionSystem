@@ -21,8 +21,7 @@ private:
     void openModel(eModel model);
 
 
-    QMap<QString, eModel> m_modelMap;
-    const std::vector<std::pair<QString, eModel>> m_list;
+    const QMap<QString, eModel> m_modelMap;
 };
 
 

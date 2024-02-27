@@ -8,12 +8,10 @@
 #include <QPlainTextEdit>
 
 #include "../widget/TextField.h"
-#include "../../python/PyTask.h"
-#include "../../python/PyWorker.h"
 #include "../../model/knn/KNNParser.h"
 
 KNN::KNN(QWidget* parent)
-        : QDialog(parent)
+        : GeneralModelView(parent)
         , m_knnTypeComboBox(new QComboBox(this))
         , m_chartRMSE(new DefaultChartWidget(this))
         , m_chartScore(new DefaultChartWidget(this))
@@ -76,10 +74,10 @@ KNN::KNN(QWidget* parent)
 
     {
         QMap<eKNNType, QString> enumMap = {
-                {Type1, "Type1"},
-                {Type2, "Type2"},
-                {Type3, "Type3"},
-                {Type4, "Type4"}
+                {Type1, "第一类"},
+                {Type2, "第二类"},
+                {Type3, "第三类"},
+                {Type4, "第四类"}
         };
 
         for (eKNNType value : enumMap.keys()) {
@@ -97,35 +95,25 @@ KNN::KNN(QWidget* parent)
         buttonGroup->setLayout(new QVBoxLayout());
         groupBox->layout()->addWidget(buttonGroup);
 
-        auto btnSelectFile = new QPushButton("选择文件");
-        connect(btnSelectFile, &QPushButton::pressed, [=]{
-            auto dialogue = new QFileDialog(this);
-            dialogue->setNameFilter("Data Files(*.csv *.txt)");
-            if (dialogue->exec())
-                selectedFile = dialogue->selectedFiles()[0];
-        });
-
-        m_btnExecute = new QPushButton("执行");
-        connect(m_btnExecute, &QPushButton::pressed, [&]{
-            if (!QFileInfo(selectedFile).exists()) {
-                QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
-                return;
-            }
-
-            auto knn = PyTask{"ModelSet", "knn", {selectedFile.toStdString(), std::to_string(m_knnTypeComboBox->currentIndex())}};
-
-            PyWorker::RunPyScriptAsync(knn, [=](string data) {
-                auto result = Model::KNN::Parse(data.c_str());
-                setData(result);
-            });
-        });
-
-        buttonGroup->layout()->addWidget(btnSelectFile);
+        buttonGroup->layout()->addWidget(m_btnSelectFile);
         buttonGroup->layout()->addWidget(m_btnExecute);
     }
 
     this->layout()->addWidget(m_chartRMSE);
     this->layout()->addWidget(groupBox);
+}
+
+void KNN::startTask() {
+    auto selectedFile = m_btnSelectFile->selectedFile();
+
+    if (!QFileInfo(selectedFile).exists()) {
+        QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
+        return;
+    }
+
+    auto knn = PyTask{"ModelSet", "knn", {selectedFile.toStdString(), std::to_string(m_knnTypeComboBox->currentIndex())}};
+
+    emit m_btnExecute->startTask(knn);
 }
 
 void updateChart(DefaultChartWidget *chart, QScatterSeries *series, const vector<double> &data_x, const vector<double> &data_y) {
@@ -159,7 +147,8 @@ void updateChart(DefaultChartWidget *chart, QScatterSeries *series, const vector
     chart->update();
 }
 
-void KNN::setData(const Model::KNN::Result &result) {
-    updateChart(m_chartRMSE, m_fRMSESeries, result.n_neighbors, result.rmse);
-    updateChart(m_chartScore, m_fScoreSeries, result.n_neighbors, result.total_score);
+void KNN::updateUI(const QString &result) {
+    auto data = Model::KNN::Parse(result.toStdString().c_str());
+    updateChart(m_chartRMSE, m_fRMSESeries, data.n_neighbors, data.rmse);
+    updateChart(m_chartScore, m_fScoreSeries, data.n_neighbors, data.total_score);
 }

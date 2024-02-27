@@ -35,7 +35,9 @@ set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 
 file(GLOB_RECURSE SRC_FILES ${SOURCE_DIR}/*.cpp ${SOURCE_DIR}/*.h ${SOURCE_DIR}/*.ui)
 
-add_executable(LifePredictionSystem ${SRC_FILES})
+qt_add_resources(QRC_FILES ${CMAKE_SOURCE_DIR}/res/resource.qrc)
+
+add_executable(LifePredictionSystem ${SRC_FILES} ${QRC_FILES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${Qt6_Link} python${PYTHON_VER}${DEBUG_SUFFIX})
 

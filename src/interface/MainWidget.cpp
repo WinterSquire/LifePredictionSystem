@@ -11,27 +11,19 @@
 
 MainWidget::MainWidget(QWidget* parent)
     : QWidget(parent)
-    , m_list({
+    , m_modelMap({
 //        {"ANN预测", eModel::MODEL_ANN},
         {"CNN预测", eModel::MODEL_CNN},
         {"KNN预测", eModel::MODEL_KNN},
-//        {"PlaceHolder", eModel::MODEL_PC},
-    }), m_modelMap({
-//        {"ANN预测", eModel::MODEL_ANN},
-                                 {"CNN预测", eModel::MODEL_CNN},
-                                 {"KNN预测", eModel::MODEL_KNN},
 //        {"PlaceHolder", eModel::MODEL_PC},
     })
 {
     auto layout = new QVBoxLayout();
     setLayout(layout);
 
-    for (auto item: m_list) {
-        m_modelMap.insert(item.first, item.second);
-
+    for (auto item: m_modelMap.toStdMap()) {
         auto button = new QPushButton(item.first, this);
         button->setStyleSheet("padding: 10px");
-
         layout->addWidget(button);
 
         connect(button, &QPushButton::pressed, this, [=](){

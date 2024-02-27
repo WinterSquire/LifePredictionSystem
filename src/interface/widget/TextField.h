@@ -18,5 +18,4 @@ private:
     QLineEdit* m_text;
 };
 
-
 #endif //LIFEPREDICTIONSYSTEM_TEXTFIELD_H

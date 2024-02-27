@@ -1,11 +1,8 @@
 #include "PyWorker.h"
 
-#include "PyCore.h"
-
 #include <Python.h>
-#include <thread>
 
-Status PyWorker::RunPyScriptSync(const PyTask &task, std::function<void(string)> invokeAfterComplete) {
+Status PyWorker::RunPyScriptSync(const PyTask &task, string& content) {
     Status result = Status::FAILURE;
 
     PyGILState_STATE gstate = PyGILState_Ensure();
@@ -36,7 +33,7 @@ Status PyWorker::RunPyScriptSync(const PyTask &task, std::function<void(string)>
             if (pValue && (response = PyUnicode_AsUTF8AndSize(pValue, &size)))
             {
                 result = Status::SUCCESS;
-                invokeAfterComplete(string(response, size));
+                content = string(response, size);
             }
             else
                 LOG("PyWorker: Call Function Failed!");
@@ -50,12 +47,4 @@ Status PyWorker::RunPyScriptSync(const PyTask &task, std::function<void(string)>
     PyGILState_Release(gstate);
 
     return result;
-}
-
-Status PyWorker::RunPyScriptAsync(const PyTask &task, std::function<void(string)> invokeAfterComplete) {
-    std::thread thread([=]{
-        PyWorker::RunPyScriptSync(task, invokeAfterComplete);
-    });
-
-    thread.detach();
 }

@@ -9,12 +9,10 @@
 #include <QMessageBox>
 
 #include "../widget/TextField.h"
-#include "../../python/PyTask.h"
-#include "../../python/PyWorker.h"
 #include "../../model/cnn/CNNParser.h"
 
 CNN::CNN(QWidget* parent)
-    : QDialog(parent)
+    : GeneralModelView(parent)
     , m_chartMSE(new DefaultChartWidget(this))
     , m_chartLoss(new DefaultChartWidget(this))
 {
@@ -80,32 +78,7 @@ CNN::CNN(QWidget* parent)
         buttonGroup->setLayout(new QVBoxLayout());
         groupBox->layout()->addWidget(buttonGroup);
 
-        auto btnSelectFile = new QPushButton("选择文件");
-        connect(btnSelectFile, &QPushButton::pressed, [=]{
-            auto dialogue = new QFileDialog(this);
-            dialogue->setNameFilter("Data Files(*.csv *.txt)");
-            dialogue->setFileMode(QFileDialog::ExistingFile);
-            if (dialogue->exec()) {
-                selectedFile = dialogue->selectedFiles()[0];
-            }
-        });
-
-        m_btnExecute = new QPushButton("执行");
-        connect(m_btnExecute, &QPushButton::pressed, [&]{
-            if (!QFileInfo(selectedFile).exists()) {
-                QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
-                return;
-            }
-
-            auto cnn = PyTask{"ModelSet", "cnn", {selectedFile.toStdString()}};
-
-            PyWorker::RunPyScriptAsync(cnn, [=](string data) {
-                auto result = Model::CNN::Parse(data.c_str());
-                setData(result);
-            });
-        });
-
-        buttonGroup->layout()->addWidget(btnSelectFile);
+        buttonGroup->layout()->addWidget(m_btnSelectFile);
         buttonGroup->layout()->addWidget(m_btnExecute);
     }
 
@@ -168,11 +141,26 @@ void updateChart(DefaultChartWidget *chart, QScatterSeries *aSeries, QScatterSer
     chart->update();
 }
 
-void CNN::setData(const Model::CNN::Result &result) {
-    updateChart(m_chartMSE, m_aMSESeries, m_fMSESeries, result.sel.mse, result.val.mse);
-    updateChart(m_chartLoss, m_aLossSeries, m_fLossSeries, result.sel.loss, result.val.loss);
+void CNN::startTask() {
+    auto selectedFile = m_btnSelectFile->selectedFile();
 
-    m_textEpoch->text()->setText(QString::number(result.sel.mse.size()));
-    m_textMSE->text()->setText(QString::number(result.mean_mse));
-    m_textScore->text()->setText(QString::number(result.total_score));
+    if (!QFileInfo(selectedFile).exists()) {
+        QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
+        return;
+    }
+
+    auto cnn = PyTask{"ModelSet", "cnn", {selectedFile.toStdString()}};
+
+    emit m_btnExecute->startTask(cnn);
+}
+
+void CNN::updateUI(const QString& result) {
+    auto data = Model::CNN::Parse(result.toStdString().c_str());
+
+    updateChart(m_chartMSE, m_aMSESeries, m_fMSESeries, data.sel.mse, data.val.mse);
+    updateChart(m_chartLoss, m_aLossSeries, m_fLossSeries, data.sel.loss, data.val.loss);
+
+    m_textEpoch->text()->setText(QString::number(data.sel.mse.size()));
+    m_textMSE->text()->setText(QString::number(data.mean_mse));
+    m_textScore->text()->setText(QString::number(data.total_score));
 }

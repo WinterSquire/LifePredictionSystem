@@ -2,26 +2,24 @@
 #define LIFEPREDICTIONSYSTEM_CNN_H
 
 #include <QDialog>
-#include <QPushButton>
 
 #include "../widget/DefaultChartWidget.h"
-
-#include "../../model/cnn/CNNResult.h"
+#include "../widget/GeneralModelView.h"
 
 class TextField;
 
-class CNN : public QDialog {
+class CNN : public GeneralModelView {
     Q_OBJECT
 public:
     CNN(QWidget* parent = nullptr);
 
-    void setData(const Model::CNN::Result& result);
-    QPushButton* btnExecute() {return m_btnExecute;}
+private slots:
+    void startTask() override;
+    void updateUI(const QString& result) override;
+
 protected:
 
 private:
-    QString selectedFile;
-    QPushButton *m_btnExecute;
     DefaultChartWidget *m_chartMSE, *m_chartLoss;
     QScatterSeries *m_aMSESeries, *m_fMSESeries;
     QScatterSeries *m_aLossSeries, *m_fLossSeries;
