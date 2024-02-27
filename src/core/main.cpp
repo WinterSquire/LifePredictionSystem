@@ -4,12 +4,15 @@
 
 #include "./base.h"
 #include "./FileSystem.h"
+#include "../python/PyCore.h"
 
 Status Prologue()
 {
     LOG("On Prologue");
 
     FileSystem::Init();
+
+    if (PyCore::Initialize() == Status::FAILURE) return Status::FAILURE;
 
     Application::Initialize();
 
@@ -27,7 +30,7 @@ int Main()
 void Epilogue()
 {
     LOG("On Epilogue");
-
+    PyCore::Finalize();
     Application::Shutdown();
 }
 

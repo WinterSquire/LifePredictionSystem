@@ -8,8 +8,7 @@
 Status PyWorker::RunPyScriptSync(const PyTask &task, std::function<void(string)> invokeAfterComplete) {
     Status result = Status::FAILURE;
 
-    if (PyCore::Initialize() == Status::FAILURE) return result;
-//    PyGILState_STATE gstate = PyGILState_Ensure();
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject *pModule, *pFunc;
     PyObject *pArgs, *pValue;
@@ -48,8 +47,7 @@ Status PyWorker::RunPyScriptSync(const PyTask &task, std::function<void(string)>
     else
         LOG("PyWorker: Can't Find Module(%s)", task.module.c_str());
 
-//    PyGILState_Release(gstate);
-    PyCore::Finalize();
+    PyGILState_Release(gstate);
 
     return result;
 }

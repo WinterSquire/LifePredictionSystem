@@ -51,6 +51,8 @@ Status PyCore::Initialize() {
 
     // Initialize
     status = Py_InitializeFromConfig(&config);
+    PyThread_init_thread();
+    PyEval_ReleaseThread(PyThreadState_Get());
 
     if (PyStatus_Exception(status)) goto FAIL;
 
@@ -65,7 +67,10 @@ Status PyCore::Initialize() {
 }
 
 Status PyCore::Finalize() {
-    if (Py_IsInitialized() == true) Py_Finalize();
+    if (Py_IsInitialized() == true) {
+        PyGILState_Ensure();
+        Py_Finalize();
+    }
     LOG("Python Finalized");
     return Status::SUCCESS;
 }
