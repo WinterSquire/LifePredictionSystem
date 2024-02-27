@@ -18,7 +18,7 @@ void Application::Initialize() {
 int Application::Execute() {
     mainWindow->show();
 
-    return qApplication->exec();
+    return QApplication::exec();
 }
 
 void Application::Shutdown() {

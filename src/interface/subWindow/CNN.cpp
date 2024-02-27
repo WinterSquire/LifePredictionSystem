@@ -19,6 +19,7 @@ CNN::CNN(QWidget* parent)
     , m_chartLoss(new DefaultChartWidget(this))
 {
     this->setWindowTitle("CNN预测");
+    this->setFixedSize(1152, 648);
 
     {
         m_chartMSE->setChartTitle("MSE");

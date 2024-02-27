@@ -18,6 +18,9 @@ KNN::KNN(QWidget* parent)
         , m_chartRMSE(new DefaultChartWidget(this))
         , m_chartScore(new DefaultChartWidget(this))
 {
+    this->setWindowTitle("KNN预测");
+    this->setFixedSize(1152, 648);
+
     {
         m_chartRMSE->setChartTitle("RMSE");
         m_chartRMSE->setAxisXName("N-Neighbors");
