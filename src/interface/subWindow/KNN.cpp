@@ -25,14 +25,7 @@ KNN::KNN(QWidget* parent)
         m_chartRMSE->setAxisYName("MSE");
         m_chartRMSE->setFixedSize(400, 400);
 
-        m_aRMSESeries = m_chartRMSE->addSeries();
         m_fRMSESeries = m_chartRMSE->addSeries();
-
-        // 设置散点的大小、颜色。
-        m_aRMSESeries->setName("实际值");
-        m_aRMSESeries->setMarkerSize(10);
-        m_aRMSESeries->setColor(QColor(Qt::green));
-        m_aRMSESeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
 
         m_fRMSESeries->setName("预测值");
         m_fRMSESeries->setMarkerSize(10);
@@ -46,13 +39,7 @@ KNN::KNN(QWidget* parent)
         m_chartScore->setAxisYName("Loss");
         m_chartScore->setFixedSize(400, 400);
 
-        m_aScoreSeries = m_chartScore->addSeries();
         m_fScoreSeries = m_chartScore->addSeries();
-
-        m_aScoreSeries->setName("实际值");
-        m_aScoreSeries->setMarkerSize(10);
-        m_aScoreSeries->setColor(QColor(Qt::green));
-        m_aScoreSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
 
         m_fScoreSeries->setName("预测值");
         m_fScoreSeries->setMarkerSize(10);

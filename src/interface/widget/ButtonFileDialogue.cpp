@@ -4,6 +4,7 @@
 
 ButtonFileDialogue::ButtonFileDialogue(QWidget *parent)
         : QPushButton(parent) {
+    setIcon(QIcon(":/icon/file_icon.png"));
     setText("选择文件");
     connect(this, &QPushButton::clicked, this, &ButtonFileDialogue::selectFile);
 }

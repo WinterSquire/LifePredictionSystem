@@ -24,8 +24,8 @@ private slots:
 
 private:
     DefaultChartWidget *m_chartRMSE, *m_chartScore;
-    QScatterSeries *m_aRMSESeries, *m_fRMSESeries;
-    QScatterSeries *m_aScoreSeries, *m_fScoreSeries;
+    QScatterSeries *m_fRMSESeries;
+    QScatterSeries *m_fScoreSeries;
     eKNNType m_knnType = Type1;
     QComboBox *m_knnTypeComboBox;
 };

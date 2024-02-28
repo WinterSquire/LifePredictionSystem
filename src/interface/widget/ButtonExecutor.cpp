@@ -3,6 +3,7 @@
 #include "../worker/WorkerThread.h"
 
 ButtonExecutor::ButtonExecutor(QWidget *parent) : QPushButton(parent) {
+    setIcon(QIcon(":/icon/run_icon.png"));
     setText("执行");
 }
 
