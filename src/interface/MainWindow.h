@@ -3,10 +3,19 @@
 
 #include <QMainWindow>
 
+#include <QStackedWidget>
+#include "page/ePage.h"
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     MainWindow(QWidget* parent = nullptr);
+
+private:
+    QStackedWidget *m_stackedWidget;
+
+private slots:
+    void switchToPage(ePage index);
 };
 
 

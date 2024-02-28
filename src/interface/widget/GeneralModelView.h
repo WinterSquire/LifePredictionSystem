@@ -16,6 +16,8 @@ protected:
     ButtonFileDialogue *m_btnSelectFile;
     ButtonExecutor *m_btnExecute;
 
+    void closeEvent(QCloseEvent *) override;
+
 protected slots:
     virtual void startTask() = 0;
     virtual void updateUI(const QString& result) = 0;

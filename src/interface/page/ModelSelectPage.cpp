@@ -1,15 +1,14 @@
-#include "MainWidget.h"
+#include "ModelSelectPage.h"
 
-#include <QDialog>
 #include <QtCore>
 #include <QLayout>
 #include <QPushButton>
 #include <QWidget>
 
-#include "subWindow/CNN.h"
-#include "subWindow/KNN.h"
+#include "../subWindow/CNN.h"
+#include "../subWindow/KNN.h"
 
-MainWidget::MainWidget(QWidget* parent)
+ModelSelectPage::ModelSelectPage(QWidget* parent)
     : QWidget(parent)
     , m_modelMap({
 //        {"ANN预测", eModel::MODEL_ANN},
@@ -23,6 +22,7 @@ MainWidget::MainWidget(QWidget* parent)
 
     for (auto item: m_modelMap.toStdMap()) {
         auto button = new QPushButton(item.first, this);
+        button->setIcon(QIcon(":/icon/model_icon.png"));
         button->setStyleSheet("padding: 10px");
         layout->addWidget(button);
 
@@ -32,19 +32,28 @@ MainWidget::MainWidget(QWidget* parent)
     }
 }
 
-#include "../python/PyWorker.h"
+void ModelSelectPage::openModel(ModelSelectPage::eModel model) {
+    if (m_currentModel) return;
 
-void MainWidget::openModel(MainWidget::eModel model) {
     switch (model) {
         case eModel::MODEL_ANN:
             break;
         case eModel::MODEL_KNN:
-            (new KNN(this))->show();
+            m_currentModel = new KNN(this);
             break;
         case eModel::MODEL_CNN:
-            (new CNN(this))->show();
+            m_currentModel = new CNN(this);
             break;
         case eModel::MODEL_PC:
             break;
     }
+
+    if (m_currentModel) {
+        m_currentModel->show();
+        connect(m_currentModel, &QObject::destroyed, this, &ModelSelectPage::onModelClosed);
+    }
+}
+
+void ModelSelectPage::onModelClosed() {
+    m_currentModel = nullptr;
 }
