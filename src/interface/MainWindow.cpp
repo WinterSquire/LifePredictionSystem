@@ -23,5 +23,9 @@ MainWindow::MainWindow(QWidget* parent)
 }
 
 void MainWindow::switchToPage(ePage index) {
-    m_stackedWidget->setCurrentIndex(static_cast<int>(index));
+    int page_index = static_cast<int>(index);
+
+    if (page_index < 0 || page_index >= m_stackedWidget->count()) return;
+
+    m_stackedWidget->setCurrentIndex(page_index);
 }

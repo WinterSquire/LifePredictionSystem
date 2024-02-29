@@ -8,7 +8,7 @@
 struct PyTask {
     string module;
     string entryFunction;
-    vector<string> args;
+    const vector<string> args;
 };
 
 

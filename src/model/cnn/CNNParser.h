@@ -4,9 +4,9 @@
 #include "CNNResult.h"
 
 namespace Model {
-     namespace CNN {
-         Result Parse(const char* str);
-     }
+    namespace CNN {
+        Result Parse(const char* str);
+    }
 };
 
 

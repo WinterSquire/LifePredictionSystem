@@ -11,14 +11,16 @@ class QChart;
 class DefaultChartWidget : public QWidget{
     Q_OBJECT
 public:
+    struct Range{ double min; double max; };
+
     DefaultChartWidget(QWidget* parent = nullptr);
 
     QScatterSeries* addSeries();
     void update();
     void setChartTitle(const char *title);
-    void setAxisXRange(double min, double max);
+    void setAxisXRange(const Range& range);
     void setAxisXName(const char *name);
-    void setAxisYRange(double min, double max);
+    void setAxisYRange(const Range& range);
     void setAxisYName(const char *name);
 protected:
     void resizeEvent(QResizeEvent *event) override;

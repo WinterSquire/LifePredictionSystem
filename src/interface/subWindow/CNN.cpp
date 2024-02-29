@@ -12,13 +12,14 @@
 #include "../../model/cnn/CNNParser.h"
 
 CNN::CNN(QWidget* parent)
-    : GeneralModelView(parent)
+    : GeneralModelView(parent, "CNN预测")
     , m_chartMSE(new DefaultChartWidget(this))
     , m_chartLoss(new DefaultChartWidget(this))
+    , m_textEpoch(new TextField(this, "Epoch的损失和评估标准", "0", true))
+    , m_textMSE(new TextField(this, "MSE均方根误差", "0", true))
+    , m_textScore(new TextField(this, "总评分", "0", true))
 {
-    this->setWindowTitle("CNN预测");
-    this->setFixedSize(1152, 648);
-
+    // 设置MSE图表
     {
         m_chartMSE->setChartTitle("MSE");
         m_chartMSE->setAxisXName("Epoch");
@@ -40,6 +41,7 @@ CNN::CNN(QWidget* parent)
         m_fMSESeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     }
 
+    // 设置Loss图表
     {
         m_chartLoss->setChartTitle("Loss");
         m_chartLoss->setAxisXName("Epoch");
@@ -60,17 +62,21 @@ CNN::CNN(QWidget* parent)
         m_fLossSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     }
 
-    this->setLayout(new QHBoxLayout());
+    // 设置图表布局
+    {
+        auto container_chart = new QWidget();
+        container_chart->setLayout(new QHBoxLayout());
 
-    auto container_chart = new QWidget();
-    container_chart->setLayout(new QHBoxLayout());
-    this->layout()->addWidget(container_chart);
+        this->layout()->addWidget(container_chart);
 
-    container_chart->layout()->addWidget(m_chartMSE);
-    container_chart->layout()->addWidget(m_chartLoss);
+        container_chart->layout()->addWidget(m_chartMSE);
+        container_chart->layout()->addWidget(m_chartLoss);
+    }
 
     auto groupBox = new QGroupBox();
     groupBox->setLayout(new QVBoxLayout());
+
+    this->layout()->addWidget(groupBox);
 
     // 设置按钮
     {
@@ -88,30 +94,27 @@ CNN::CNN(QWidget* parent)
         outputGroup->setLayout(new QVBoxLayout());
         groupBox->layout()->addWidget(outputGroup);
 
-        m_textEpoch = new TextField();
-        m_textEpoch->label()->setText("Epoch的损失和评估标准");
-        m_textEpoch->text()->setText("0");
         outputGroup->layout()->addWidget(m_textEpoch);
-
-        m_textMSE = new TextField();
-        m_textMSE->label()->setText("MSE均方根误差");
-        m_textMSE->text()->setText("0");
-        m_textMSE->text()->setReadOnly(true);
         outputGroup->layout()->addWidget(m_textMSE);
-
-        m_textScore = new TextField();
-        m_textScore->label()->setText("Total Score");
-        m_textScore->text()->setText("0");
-        m_textScore->text()->setReadOnly(true);
         outputGroup->layout()->addWidget(m_textScore);
     }
+}
 
-    this->layout()->addWidget(m_chartMSE);
-    this->layout()->addWidget(groupBox);
+void CNN::startTask() {
+    auto selectedFile = m_btnSelectFile->selectedFile();
+
+    if (!QFileInfo(selectedFile).exists()) {
+        QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
+        return;
+    }
+
+    auto cnn = PyTask{"ModelSet", "cnn", {selectedFile.toStdString()}};
+
+    emit m_btnExecute->startTask(cnn);
 }
 
 void updateChart(DefaultChartWidget *chart, QScatterSeries *aSeries, QScatterSeries *fSeries
-    , const vector<double> &actual, const vector<double> &forecast) {
+        , const vector<double> &actual, const vector<double> &forecast) {
 
     int epoch = actual.size();
     double range_miny = 0;
@@ -136,30 +139,19 @@ void updateChart(DefaultChartWidget *chart, QScatterSeries *aSeries, QScatterSer
         }
     }
 
-    chart->setAxisXRange(0, epoch);
-    chart->setAxisYRange(range_miny >= 1000 ? range_miny - 1000 : range_miny,range_maxy + 1000);
+    chart->setAxisXRange({0, static_cast<double>(epoch)});
+    chart->setAxisYRange({range_miny >= 1000 ? range_miny - 1000 : range_miny,range_maxy + 1000});
     chart->update();
-}
-
-void CNN::startTask() {
-    auto selectedFile = m_btnSelectFile->selectedFile();
-
-    if (!QFileInfo(selectedFile).exists()) {
-        QMessageBox::warning(this, "警告", "数据文件无效", QMessageBox::Ok);
-        return;
-    }
-
-    auto cnn = PyTask{"ModelSet", "cnn", {selectedFile.toStdString()}};
-
-    emit m_btnExecute->startTask(cnn);
 }
 
 void CNN::updateUI(const QString& result) {
     auto data = Model::CNN::Parse(result.toStdString().c_str());
 
+    // 更新图表
     updateChart(m_chartMSE, m_aMSESeries, m_fMSESeries, data.sel.mse, data.val.mse);
     updateChart(m_chartLoss, m_aLossSeries, m_fLossSeries, data.sel.loss, data.val.loss);
 
+    // 更新文本
     m_textEpoch->text()->setText(QString::number(data.sel.mse.size()));
     m_textMSE->text()->setText(QString::number(data.mean_mse));
     m_textScore->text()->setText(QString::number(data.total_score));

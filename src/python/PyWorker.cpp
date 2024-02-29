@@ -10,6 +10,8 @@ Status PyWorker::RunPyScriptSync(const PyTask &task, string& content) {
     PyObject *pModule, *pFunc;
     PyObject *pArgs, *pValue;
 
+    LOG("PyWorker: 脚本初始化中...");
+
     pModule = PyImport_ImportModule(task.module.c_str());
 
     if (pModule)
@@ -25,7 +27,11 @@ Status PyWorker::RunPyScriptSync(const PyTask &task, string& content) {
             for (int i = 0; i < argc; ++i)
                 PyTuple_SetItem(pArgs, i, PyUnicode_DecodeFSDefault(task.args[i].c_str()));
 
+            LOG("PyWorker: 脚本开始执行...");
+
             pValue = PyObject_CallObject(pFunc, pArgs);
+
+            LOG("PyWorker: 脚本执行结束...");
 
             const char* response;
             Py_ssize_t size;

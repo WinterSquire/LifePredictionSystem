@@ -8,7 +8,7 @@
 class TextField : public QWidget {
     Q_OBJECT
 public:
-    TextField(QWidget* parent = nullptr);
+    TextField(QWidget* parent = nullptr, const QString& label = "", const QString& text = "", bool readOnly = false);
 
     QLabel* label() {return m_label;};
     QLineEdit* text() {return m_text;};

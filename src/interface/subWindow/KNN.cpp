@@ -11,14 +11,12 @@
 #include "../../model/knn/KNNParser.h"
 
 KNN::KNN(QWidget* parent)
-        : GeneralModelView(parent)
-        , m_knnTypeComboBox(new QComboBox(this))
-        , m_chartRMSE(new DefaultChartWidget(this))
-        , m_chartScore(new DefaultChartWidget(this))
+    : GeneralModelView(parent, "KNN预测")
+    , m_knnTypeComboBox(new QComboBox(this))
+    , m_chartRMSE(new DefaultChartWidget(this))
+    , m_chartScore(new DefaultChartWidget(this))
 {
-    this->setWindowTitle("KNN预测");
-    this->setFixedSize(1152, 648);
-
+    // 设置RMSE图表
     {
         m_chartRMSE->setChartTitle("RMSE");
         m_chartRMSE->setAxisXName("N-Neighbors");
@@ -33,10 +31,11 @@ KNN::KNN(QWidget* parent)
         m_fRMSESeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     }
 
+    // 设置Total Score图表
     {
         m_chartScore->setChartTitle("Total Score");
         m_chartScore->setAxisXName("N-Neighbors");
-        m_chartScore->setAxisYName("Loss");
+        m_chartScore->setAxisYName("总分");
         m_chartScore->setFixedSize(400, 400);
 
         m_fScoreSeries = m_chartScore->addSeries();
@@ -47,17 +46,20 @@ KNN::KNN(QWidget* parent)
         m_fScoreSeries->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     }
 
-    this->setLayout(new QHBoxLayout());
+    // 设置图表布局
+    {
+        auto container_chart = new QWidget();
+        container_chart->setLayout(new QHBoxLayout());
+        this->layout()->addWidget(container_chart);
 
-    auto container_chart = new QWidget();
-    container_chart->setLayout(new QHBoxLayout());
-    this->layout()->addWidget(container_chart);
-
-    container_chart->layout()->addWidget(m_chartRMSE);
-    container_chart->layout()->addWidget(m_chartScore);
+        container_chart->layout()->addWidget(m_chartRMSE);
+        container_chart->layout()->addWidget(m_chartScore);
+    }
 
     auto groupBox = new QGroupBox();
     groupBox->setLayout(new QVBoxLayout());
+
+    this->layout()->addWidget(groupBox);
 
     {
         QMap<eKNNType, QString> enumMap = {
@@ -85,9 +87,6 @@ KNN::KNN(QWidget* parent)
         buttonGroup->layout()->addWidget(m_btnSelectFile);
         buttonGroup->layout()->addWidget(m_btnExecute);
     }
-
-    this->layout()->addWidget(m_chartRMSE);
-    this->layout()->addWidget(groupBox);
 }
 
 void KNN::startTask() {
@@ -129,8 +128,8 @@ void updateChart(DefaultChartWidget *chart, QScatterSeries *series, const vector
         }
     }
 
-    chart->setAxisXRange(0, range_maxx + 1);
-    chart->setAxisYRange(range_miny >= 10 ? range_miny - 10 : range_miny,range_maxy + 10);
+    chart->setAxisXRange({0, range_maxx + 1});
+    chart->setAxisYRange({range_miny >= 10 ? range_miny - 10 : range_miny,range_maxy + 10});
     chart->update();
 }
 

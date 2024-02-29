@@ -31,13 +31,13 @@ void DefaultChartWidget::update() {
     m_chartView->update();
 }
 
-void DefaultChartWidget::setAxisXRange(double min, double max) {
-    m_chart->axisX()->setRange(min, max);
+void DefaultChartWidget::setAxisXRange(const Range& range) {
+    m_chart->axisX()->setRange(range.min, range.max);
 //    if (m_axisX) m_axisX->rangeChanged(min, max); // crash
 }
 
-void DefaultChartWidget::setAxisYRange(double min, double max) {
-    m_chart->axisY()->setRange(min, max);
+void DefaultChartWidget::setAxisYRange(const Range& range) {
+    m_chart->axisY()->setRange(range.min, range.max);
 //    if (m_axisY) m_axisY->rangeChanged(min, max); //crash
 }
 
