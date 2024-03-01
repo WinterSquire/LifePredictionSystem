@@ -1,9 +1,7 @@
 @echo off
 set mirror=https://pypi.tuna.tsinghua.edu.cn/simple
+set packages=numpy pandas scikit-learn tensorflow
 
-python\python -m pip install numpy -i %mirror%
-python\python -m pip install pandas -i %mirror%
-python\python -m pip install scikit-learn -i %mirror%
-python\python -m pip install tensorflow -i %mirror%
+python\python -m pip install %packages% -i %mirror%
 
 echo Done!

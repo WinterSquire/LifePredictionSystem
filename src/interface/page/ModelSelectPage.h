@@ -24,7 +24,7 @@ private:
     void onModelClosed();
 
     const QMap<QString, eModel> m_modelMap;
-    GeneralModelView* m_currentModel;
+    GeneralModelView* m_currentModel = nullptr;
 };
 
 
