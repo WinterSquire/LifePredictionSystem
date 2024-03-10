@@ -35,8 +35,8 @@ cmake .. -G "Visual Studio 17 2022" -D CMAKE_PREFIX_PATH=%QT6_PATH% -D PYTHON_DI
 
 ### 三. 如何运行
 如果你是从[Appveyor](https://ci.appveyor.com/project/WinterSquire/lifepredictionsystem)中下载的，
-在运行前检查一下是否有安装``vc_redist.x64``，然后在第一次运行前执行``install_package.bat``。
+在运行前检查一下是否有安装``vc_redist.x64``，然后在第一次运行前执行``install_package.bat``来安装Python Package。
 
 > install_package.bat 一定要执行成功，如果执行失败，请检查运行路径是否超过了[最大路径长度限制](https://learn.microsoft.com/zh-cn/windows/win32/fileio/maximum-file-path-limitation?tabs=registry)。
 
-如果你是自行构建的，只需提前执行一次``install_python.ps1``。
+如果你是自行构建的，还需在上面的基础上提前执行一次``install_python.ps1``来安装Python解释器。
